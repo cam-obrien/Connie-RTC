@@ -1,90 +1,82 @@
 import React, { useState } from 'react';
-import { data } from '../data/data';
 import { BsPersonFill, BsThreeDotsVertical } from 'react-icons/bs';
-import AdminEditUser from './AdminEditUser';
+import AdminUserModal from './AdminUserModal';
 import Modal from './Modal';
 
-const UsersTable = () => {
-  const [displaySkills, setDisplaySkills] = useState<number | undefined>(
-    undefined
-  );
+const UsersTable = ({
+  users,
+  setUsers,
+}: {
+  users: any[];
+  setUsers: React.Dispatch<React.SetStateAction<any[]>>;
+}) => {
   const [modalContent, setModalContent] = useState<React.ReactNode>(null);
   const [showModal, setShowModal] = useState(false);
-
-  const handleMoreClick = (id: number) => {
-    if (displaySkills === id) {
-      setDisplaySkills(undefined);
-    } else {
-      setDisplaySkills(id);
-    }
-  };
 
   return (
     <>
       {showModal && (
         <Modal>
-          <div className="bg-white p-4 rounded-lg">{modalContent}</div>
+          <div className="p-4 bg-white rounded-lg">{modalContent}</div>
         </Modal>
       )}
-      <div className="w-full m-auto p-4 border rounded-lg bg-white overflow-y-auto">
-        <div className="my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer">
+      <div className="w-full p-4 m-auto overflow-y-auto bg-white border rounded-lg">
+        <div className="grid items-center justify-between grid-cols-2 p-2 my-3 cursor-pointer md:grid-cols-4 sm:grid-cols-3">
           <span>Name</span>
-          <span className="sm:text-left text-right">Email</span>
+          <span className="text-right sm:text-left">Email</span>
           <span className="hidden md:grid">Skills</span>
           <span className="hidden sm:grid">Status</span>
         </div>
         <ul>
-          {data.map((order, id) => (
+          {users.map((user) => (
             <li
-              key={id}
-              className="bg-gray-50 hover:bg-gray-100 rounded-lg my-3 p-2 grid md:grid-cols-4 sm:grid-cols-3 grid-cols-2 items-center justify-between cursor-pointer"
+              key={user.id}
+              className="grid items-center justify-between grid-cols-2 p-2 my-3 rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 md:grid-cols-4 sm:grid-cols-3"
             >
               <div className="flex items-center">
-                <div className="bg-purple-100 p-3 rounded-lg">
+                <div className="p-3 bg-purple-100 rounded-lg">
                   <BsPersonFill className="text-purple-800" />
                 </div>
                 <div className="pl-4">
-                  <p>{order.name.first + ' ' + order.name.last}</p>
+                  {user.firstName + ' ' + user.lastName}
                   <p style={{ color: 'gray', fontSize: '0.8em' }}>
-                    Role: {order.role}
+                    Role: {user.role}
                   </p>
                   <p style={{ color: 'gray', fontSize: '0.8em' }}>
-                    Level of Access: {order.levelOfAccess}
+                    Level of Access:
                   </p>
                 </div>
               </div>
-              <p className="text-gray-600 sm:text-left text-right">
-                {order.name.first}@gmail.com
-              </p>
-              <div className="flex flex-wrap">
-                {order.skills
-                  .split(', ')
-                  .slice(0, displaySkills === order.id ? undefined : 3)
-                  .map((skill, index) => (
-                    <span
-                      key={index}
-                      className="bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2"
-                    >
-                      {skill}
-                    </span>
-                  ))}
-                {order.skills.split(', ').length > 3 && (
-                  <span
-                    className="text-sm text-gray-700 cursor-pointer"
-                    onClick={() => handleMoreClick(order.id)}
-                  >
-                    {displaySkills === order.id ? 'Less' : '...More'}
-                  </span>
-                )}
+              <div>
+                <p className="text-right text-gray-600 sm:text-left">
+                  {user.email}
+                </p>
+                <p style={{ color: 'gray', fontSize: '0.8em' }}>{user.sid}</p>
               </div>
-              <div className="sm:flex hidden justify-between items-center">
-                <span className="bg-purple-100 rounded-full px-3 py-1 text-sm font-semibold text-purple-800 mr-2 mb-2">
-                  {order.status}
+              <div className="flex flex-wrap">
+                {/* Placeholder skills */}
+                {['Skill A', 'Skill B', 'Skill C'].map((skill, index) => (
+                  <div
+                    key={index}
+                    className="px-3 py-1 mb-2 mr-2 text-sm font-semibold text-gray-700 bg-gray-200 rounded-full"
+                  >
+                    {skill}
+                  </div>
+                ))}
+              </div>
+              <div className="items-center justify-between hidden sm:flex">
+                <span className="px-3 py-1 mb-2 mr-2 text-sm font-semibold text-purple-800 bg-purple-100 rounded-full">
+                  {user.status}
                 </span>
                 <BsThreeDotsVertical
                   onClick={() => {
                     setModalContent(
-                      <AdminEditUser setShowModal={setShowModal} />
+                      <AdminUserModal
+                        setShowModal={setShowModal}
+                        user={user}
+                        setUsers={setUsers}
+                        users={users}
+                      />
                     );
                     setShowModal(true);
                   }}
